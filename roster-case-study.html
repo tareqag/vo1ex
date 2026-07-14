@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roster — VELINX case study</title>
+<meta name="description" content="Shifts and pay, built around how one two-store retail business actually runs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bone:#F4F3ED;
+    --paper:#FFFFFF;
+    --ink:#23281F;
+    --muted:#6E7265;
+    --faint:#A2A498;
+    --line:#E4E2D6;
+    --rule:#D4D2C4;
+    --viridian:#30503F;
+    --viridian-soft:#E8EDE6;
+    --amber:#A66A1F;
+    --serif:"Young Serif",Georgia,serif;
+    --sans:"Instrument Sans",system-ui,-apple-system,sans-serif;
+    --mono:"Spline Sans Mono",ui-monospace,"SF Mono",monospace;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;background:var(--bone);color:var(--ink);
+    font-family:var(--sans);font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:1000px;margin:0 auto;padding:0 28px;}
+  a{color:var(--viridian);}
+
+  /* ── Top bar ─────────────────────────────────────────── */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 0;border-bottom:1px solid var(--line);
+  }
+  .mark{font-family:var(--serif);font-size:19px;letter-spacing:-.01em;}
+  .mark span{color:var(--viridian);}
+  .topbar .meta{
+    font-family:var(--mono);font-size:12px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.12em;
+  }
+
+  /* ── Hero ────────────────────────────────────────────── */
+  .hero{padding:74px 0 10px;}
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.16em;color:var(--muted);
+    margin:0 0 20px;
+  }
+  h1{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(38px,6.1vw,62px);line-height:1.05;
+    letter-spacing:-.02em;margin:0 0 24px;max-width:15ch;
+  }
+  .deck{
+    font-size:19px;line-height:1.55;color:var(--muted);
+    max-width:58ch;margin:0;
+  }
+  .deck strong{color:var(--ink);font-weight:600;}
+
+  /* ── Figures ─────────────────────────────────────────── */
+  .figure{
+    background:var(--paper);border:1px solid var(--line);
+    border-radius:16px;padding:26px 26px 22px;margin:44px 0 0;
+  }
+  .figure-cap{
+    font-family:var(--mono);font-size:11px;text-transform:uppercase;
+    letter-spacing:.14em;color:var(--faint);margin:0 0 18px;
+  }
+  .split-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;margin-bottom:14px;
+  }
+  .split-when{font-family:var(--mono);font-size:14px;font-weight:500;}
+  .split-when em{color:var(--muted);font-style:normal;}
+  .split-who{font-weight:600;font-size:15px;}
+
+  .bar{
+    display:flex;height:56px;border-radius:8px;overflow:hidden;
+    border:1px solid var(--rule);
+  }
+  .seg{
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:12px;font-weight:600;
+    letter-spacing:.04em;color:#fff;white-space:nowrap;
+    width:0;transition:width 900ms cubic-bezier(.22,.61,.36,1);
+  }
+  .seg-base{background:var(--viridian);}
+  .seg-night{background:var(--amber);}
+  .bar.is-drawn .seg-base{width:33.33%;}
+  .bar.is-drawn .seg-night{width:66.67%;}
+
+  .ticks{
+    display:flex;margin-top:7px;
+    font-family:var(--mono);font-size:11px;color:var(--faint);
+  }
+  .tick-l{width:33.33%;}
+  .tick-m{width:66.67%;position:relative;}
+  .tick-m::before{
+    content:"";position:absolute;left:0;top:-30px;bottom:14px;
+    border-left:1px dashed var(--rule);
+  }
+  .tick-r{text-align:right;flex:1;}
+
+  .rows{margin-top:22px;border-top:1px solid var(--line);}
+  .row{
+    display:grid;grid-template-columns:12px 1fr auto auto;
+    gap:12px;align-items:center;
+    padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;
+  }
+  .swatch{width:9px;height:9px;border-radius:2px;}
+  .sw-base{background:var(--viridian);}
+  .sw-night{background:var(--amber);}
+  .row-band{font-weight:600;}
+  .row-band em{
+    font-style:normal;color:var(--muted);font-weight:400;
+    font-size:13px;margin-left:6px;
+  }
+  .row-rate,.row-amt{font-family:var(--mono);font-size:13px;}
+  .row-rate{color:var(--muted);}
+  .row-amt{font-weight:600;min-width:74px;text-align:right;}
+
+  .total{display:flex;align-items:baseline;justify-content:space-between;padding-top:14px;}
+  .total-label{
+    font-family:var(--mono);font-size:11px;text-transform:uppercase;
+    letter-spacing:.14em;color:var(--muted);
+  }
+  .total-amt{font-family:var(--mono);font-size:24px;font-weight:600;}
+  .figure-note{margin:16px 0 0;font-size:13px;color:var(--faint);line-height:1.5;}
+
+  /* ── Ruled sections ──────────────────────────────────── */
+  section.band{border-top:1px solid var(--rule);padding:56px 0;}
+  .grid{display:grid;grid-template-columns:150px 1fr;gap:40px;}
+  .gutter{
+    font-family:var(--mono);font-size:11px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.14em;color:var(--muted);
+    padding-top:6px;
+  }
+  h2{
+    font-family:var(--serif);font-weight:400;
+    font-size:29px;line-height:1.2;letter-spacing:-.01em;margin:0 0 18px;
+  }
+  .body > p{margin:0 0 15px;max-width:62ch;}
+  .body > p:last-child{margin-bottom:0;}
+
+  /* ── Signature device: friction → answer ─────────────── */
+  .pair{
+    display:grid;grid-template-columns:1fr 1fr;
+    border-top:1px solid var(--line);
+  }
+  .pair:last-of-type{border-bottom:1px solid var(--line);}
+  .pair-before{padding:22px 30px 22px 0;}
+  .pair-after{
+    padding:22px 0 22px 26px;
+    border-left:2px solid var(--viridian);
+    background:linear-gradient(90deg,var(--viridian-soft),rgba(232,237,230,0));
+  }
+  .pair-tag{
+    display:block;font-family:var(--mono);font-size:10px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.14em;
+    color:var(--faint);margin-bottom:7px;
+  }
+  .pair-after .pair-tag{color:var(--viridian);}
+  .pair p{margin:0;font-size:15px;line-height:1.55;}
+  .pair-before p{color:var(--muted);}
+  .pair-after p{color:var(--ink);}
+
+  /* ── Effective-dating timeline ───────────────────────── */
+  .tl{
+    margin:30px 0 0;background:var(--paper);
+    border:1px solid var(--line);border-radius:14px;padding:26px 26px 22px;
+  }
+  .tl-track{
+    position:relative;height:3px;background:var(--line);
+    border-radius:2px;margin:52px 0 0;
+  }
+  .tl-fill-old{
+    position:absolute;left:0;width:55%;height:100%;
+    background:var(--viridian);border-radius:2px;
+  }
+  .tl-fill-new{
+    position:absolute;left:55%;right:0;height:100%;
+    background:var(--viridian);border-radius:2px;opacity:.4;
+  }
+  .tl-change{
+    position:absolute;left:55%;top:-9px;width:2px;height:21px;background:var(--ink);
+  }
+  .tl-change-label{
+    position:absolute;left:55%;top:-42px;transform:translateX(-50%);
+    font-family:var(--mono);font-size:11px;white-space:nowrap;
+    background:var(--ink);color:var(--bone);padding:4px 9px;border-radius:5px;
+  }
+  .tl-pin{
+    position:absolute;top:-6px;width:15px;height:15px;border-radius:50%;
+    background:var(--paper);border:3px solid var(--viridian);
+  }
+  .tl-pin.a{left:24%;}
+  .tl-pin.b{left:78%;}
+  .tl-legend{display:flex;justify-content:space-between;margin-top:18px;gap:20px;}
+  .tl-item{font-size:13px;max-width:24ch;}
+  .tl-item .when{font-family:var(--mono);font-size:12px;font-weight:600;display:block;}
+  .tl-item .what{color:var(--muted);display:block;margin-top:3px;}
+  .tl-item .amt{font-family:var(--mono);font-weight:600;color:var(--viridian);}
+  .tl-item.right{text-align:right;}
+
+  /* ── Closing ─────────────────────────────────────────── */
+  .close-card{
+    background:var(--viridian);color:var(--bone);
+    border-radius:16px;padding:32px 32px 28px;
+  }
+  .close-card h2{color:var(--bone);margin-bottom:15px;}
+  .close-card p{
+    margin:0 0 14px;max-width:60ch;
+    color:rgba(244,243,237,.84);font-size:15.5px;
+  }
+  .close-card p:last-child{margin-bottom:0;}
+
+  footer{
+    border-top:1px solid var(--rule);padding:30px 0 56px;
+    display:flex;justify-content:space-between;align-items:center;
+    gap:16px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:12px;color:var(--muted);
+  }
+
+  :focus-visible{outline:2px solid var(--viridian);outline-offset:2px;}
+
+  @media (max-width:760px){
+    .wrap{padding:0 20px;}
+    .hero{padding:52px 0 6px;}
+    .grid{grid-template-columns:1fr;gap:14px;}
+    section.band{padding:42px 0;}
+    .pair{grid-template-columns:1fr;}
+    .pair-before{padding:20px 0 14px;}
+    .pair-after{padding:16px 0 20px 18px;}
+    .tl-legend{flex-direction:column;gap:16px;}
+    .tl-item.right{text-align:left;}
+    .seg{font-size:11px;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .seg{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="mark">Roster<span>.</span></div>
+    <div class="meta">VELINX — Case study</div>
+  </div>
+
+  <!-- ── Hero ───────────────────────────────────────────── -->
+  <header class="hero">
+    <p class="eyebrow">Shifts and pay — retail</p>
+    <h1>Built around how this shop actually runs.</h1>
+    <p class="deck">
+      A rostering and pay app for a family-run perfume business with two shopfronts.
+      <strong>Every part of it exists because something was going wrong without it.</strong>
+      Nothing here is a feature for the sake of a feature list.
+    </p>
+
+    <figure class="figure">
+      <p class="figure-cap">Nobody works this out any more</p>
+
+      <div class="split-head">
+        <span class="split-who">Monday evening — Wollongong</span>
+        <span class="split-when">3:00pm <em>→</em> 9:00pm <em>· 6h</em></span>
+      </div>
+
+      <div class="bar" id="bar">
+        <div class="seg seg-base">NORMAL</div>
+        <div class="seg seg-night">EVENING RATE</div>
+      </div>
+
+      <div class="ticks">
+        <span class="tick-l">3:00pm</span>
+        <span class="tick-m">5:00pm</span>
+        <span class="tick-r">9:00pm</span>
+      </div>
+
+      <div class="rows">
+        <div class="row">
+          <span class="swatch sw-base"></span>
+          <span class="row-band">Normal <em>weekday, up to 5pm</em></span>
+          <span class="row-rate">2h × $28.50</span>
+          <span class="row-amt">$57.00</span>
+        </div>
+        <div class="row">
+          <span class="swatch sw-night"></span>
+          <span class="row-band">Evening <em>weekday, after 5pm</em></span>
+          <span class="row-rate">4h × $31.00</span>
+          <span class="row-amt">$124.00</span>
+        </div>
+      </div>
+
+      <div class="total">
+        <span class="total-label">What this shift costs</span>
+        <span class="total-amt">$181.00</span>
+      </div>
+
+      <p class="figure-note">
+        One shift, two rates, because it crosses five o'clock. You put in the hours;
+        the app does the rest. Rates shown are examples.
+      </p>
+    </figure>
+  </header>
+
+  <!-- ── The shop ───────────────────────────────────────── -->
+  <section class="band">
+    <div class="grid">
+      <div class="gutter">The shop</div>
+      <div class="body">
+        <h2>Two shopfronts, a family, and a handful of staff.</h2>
+        <p>
+          A luxury perfume retailer with a store in Wollongong and a pop-up in
+          Shellharbour. The people working the floor are family and hired staff, and they
+          move between the two. Nobody sits at a desk. Nobody has a work email. Everything
+          happens on a phone, usually mid-shift.
+        </p>
+        <p>
+          The scheduling tools you can buy assume an office, a rota that never changes,
+          and one flat hourly rate. None of that was true here. What follows is what was
+          actually breaking — and what was built for each of them.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Pay ────────────────────────────────────────────── -->
+  <section class="band">
+    <div class="grid">
+      <div class="gutter">Getting people paid</div>
+      <div class="body">
+        <h2>Payday used to start with a calculator.</h2>
+
+        <div class="pair">
+          <div class="pair-before">
+            <span class="pair-tag">What was happening</span>
+            <p>
+              A Sunday is worth more than a Tuesday morning, and an evening is worth more
+              than an afternoon. Every week, someone sat down and worked out by hand what
+              each person was owed — hour by hour, at a different rate for each stretch.
+            </p>
+          </div>
+          <div class="pair-after">
+            <span class="pair-tag">What happens now</span>
+            <p>
+              You enter the shift. The app prices it. It knows a Monday 3–9 crosses into
+              evening rates at five, and splits it there. Saturdays, Sundays and public
+              holidays price themselves.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="pair-before">
+            <span class="pair-tag">What was happening</span>
+            <p>
+              Public holidays are easy to forget — right up until payday, when someone
+              realises the whole day should have been paid at a different rate.
+            </p>
+          </div>
+          <div class="pair-after">
+            <span class="pair-tag">What happens now</span>
+            <p>
+              Add the holiday once, whenever you think of it. Every shift on that day is
+              repriced automatically, and it's marked on the roster so the team sees it
+              too.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="pair-before">
+            <span class="pair-tag">What was happening</span>
+            <p>
+              Give someone a raise, and last month's pay quietly changed with it. Numbers
+              that had already been paid out stopped matching the numbers on the screen.
+            </p>
+          </div>
+          <div class="pair-after">
+            <span class="pair-tag">What happens now</span>
+            <p>
+              A new rate starts on a date you choose. Shifts worked before that date keep
+              the rate they were worked at. What you paid in June still reads as what you
+              paid in June.
+            </p>
+          </div>
+        </div>
+
+        <div class="tl">
+          <p class="figure-cap">A raise doesn't reach backwards</p>
+          <div class="tl-track">
+            <div class="tl-fill-old"></div>
+            <div class="tl-fill-new"></div>
+            <div class="tl-change-label">Rate goes up — 1 July</div>
+            <div class="tl-change"></div>
+            <div class="tl-pin a"></div>
+            <div class="tl-pin b"></div>
+          </div>
+          <div class="tl-legend">
+            <span class="tl-item">
+              <span class="when">Shift worked 24 June</span>
+              <span class="what">still paid at the old rate — <span class="amt">$28.50</span></span>
+            </span>
+            <span class="tl-item right">
+              <span class="when">Shift worked 8 July</span>
+              <span class="what">paid at the new rate — <span class="amt">$30.00</span></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── The roster ─────────────────────────────────────── -->
+  <section class="band">
+    <div class="grid">
+      <div class="gutter">Who's on</div>
+      <div class="body">
+        <h2>The roster stopped living in a group chat.</h2>
+
+        <div class="pair">
+          <div class="pair-before">
+            <span class="pair-tag">What was happening</span>
+            <p>
+              “Am I on Saturday?” was a text message. The roster existed in a group chat
+              and in people's heads, and the two didn't always agree.
+            </p>
+          </div>
+          <div class="pair-after">
+            <span class="pair-tag">What happens now</span>
+            <p>
+              Open the app: today, the week ahead, either shop. Who's on now, who's in
+              later, who's already finished. Staff see the whole roster — they need to know
+              who they're working with. They only ever see their own pay.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="pair-before">
+            <span class="pair-tag">What was happening</span>
+            <p>
+              It's easy to put someone on at both shops at once. You usually find out on
+              the day, when one of the two doesn't get covered.
+            </p>
+          </div>
+          <div class="pair-after">
+            <span class="pair-tag">What happens now</span>
+            <p>
+              A shift that clashes with one they already have won't save. The app tells you
+              when and where the overlap is, before it becomes Saturday's problem.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="pair-before">
+            <span class="pair-tag">What was happening</span>
+            <p>
+              Most weeks look like last week. Rebuilding the same roster from scratch every
+              time is busywork nobody has time for.
+            </p>
+          </div>
+          <div class="pair-after">
+            <span class="pair-tag">What happens now</span>
+            <p>
+              Set a shift to repeat weekly and it fills the weeks ahead. Any week that
+              would double-book someone is skipped, and it tells you which ones.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── The team ───────────────────────────────────────── -->
+  <section class="band">
+    <div class="grid">
+      <div class="gutter">The team</div>
+      <div class="body">
+        <h2>Shaped around a family business, not an office.</h2>
+
+        <div class="pair">
+          <div class="pair-before">
+            <span class="pair-tag">What was happening</span>
+            <p>
+              “Stocktake Sunday, both shops close at four” gets posted to the group chat
+              once, and is buried under other messages by dinner.
+            </p>
+          </div>
+          <div class="pair-after">
+            <span class="pair-tag">What happens now</span>
+            <p>
+              A notice sits at the top of the roster until each person dismisses it
+              themselves. Instructions meant for one shift — open with Amira, bring the
+              spare keys — ride on that shift, where they can't get lost.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="pair-before">
+            <span class="pair-tag">What was happening</span>
+            <p>
+              In a family business, the same name comes up more than once. Choosing who to
+              roster meant guessing between three people called Tareq.
+            </p>
+          </div>
+          <div class="pair-after">
+            <span class="pair-tag">What happens now</span>
+            <p>
+              Anyone can be hidden from the scheduling list without touching their shifts or
+              their pay, and names can be set to whatever people actually call each other.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="pair-before">
+            <span class="pair-tag">What was happening</span>
+            <p>
+              Nobody has a company email address. Staff live on their phones, and a tool
+              that opens with “create an account” doesn't get used.
+            </p>
+          </div>
+          <div class="pair-after">
+            <span class="pair-tag">What happens now</span>
+            <p>
+              Send a link over WhatsApp. They pick their own username and password, and add
+              it to their home screen — after that it opens like any other app on the phone.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="pair-before">
+            <span class="pair-tag">What was happening</span>
+            <p>
+              People come and go. When someone leaves, their access needs to go with them —
+              but the record of what they worked, and what they were paid, can't.
+            </p>
+          </div>
+          <div class="pair-after">
+            <span class="pair-tag">What happens now</span>
+            <p>
+              Switch them off and they're locked out the next time they open it. Their shifts
+              and pay history stay exactly where they were, for the books.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Closing ────────────────────────────────────────── -->
+  <section class="band">
+    <div class="grid">
+      <div class="gutter">In short</div>
+      <div class="body">
+        <div class="close-card">
+          <h2>A tool that fits the shop, instead of a shop that fits the tool.</h2>
+          <p>
+            Roster does two things — who's working, and what that costs — and it does them
+            the way this business actually works, down to the five o'clock boundary and the
+            three people with the same first name.
+          </p>
+          <p>
+            It belongs to the business. No subscription, no charge per person, and nothing
+            about the shop or its staff sitting on someone else's platform. The next stage
+            takes the same tool further across the floor: stock, and orders.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>VELINX — internal tools for independent retail</span>
+    <span>Wollongong, NSW</span>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var bar = document.getElementById('bar');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      bar.classList.add('is-drawn');
+      return;
+    }
+    requestAnimationFrame(function () {
+      setTimeout(function () { bar.classList.add('is-drawn'); }, 180);
+    });
+  })();
+</script>
+
+</body>
+</html>
